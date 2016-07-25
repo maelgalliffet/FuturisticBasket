@@ -3,13 +3,18 @@ using System.Collections;
 
 public class Ball : MonoBehaviour {
 
-	private Collider glassCollider;
+	private Collider glassCollider1;
+	private Collider glassCollider2;
 	private BallLauncher ballLauncher;
 	private ScoreText scoreText;
+	private int nbBounces = 0;
+	public int maxBounces;
 	// Use this for initialization
 	void Start () {
-		GameObject glass = GameObject.Find ("GlassBall");
-		glassCollider = glass.GetComponent<MeshCollider> ();
+		GameObject glass1 = GameObject.Find ("GlassBall1");
+		GameObject glass2 = GameObject.Find ("GlassBall2");
+		glassCollider1 = glass1.GetComponent<MeshCollider> ();
+		glassCollider2 = glass2.GetComponent<MeshCollider> ();
 		ballLauncher = GameObject.Find ("Ball Launcher").GetComponent<BallLauncher> ();
 		scoreText =  GameObject.Find ("ScoreText").GetComponent<ScoreText> ();
 	}
@@ -20,12 +25,17 @@ public class Ball : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision collision){
-		if (collision.collider == glassCollider) {
+		nbBounces++;
+		if (collision.collider == glassCollider1 || collision.collider == glassCollider2) {
 			ballLauncher.nbBalls--;
 			scoreText.score++;
 			scoreText.b_newPoint = true;
 			Destroy (gameObject);
 
+		}
+		if (nbBounces == maxBounces) {
+			ballLauncher.nbBalls--;
+			Destroy (gameObject);
 		}
 	}
 }

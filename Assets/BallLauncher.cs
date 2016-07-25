@@ -44,9 +44,10 @@ public class BallLauncher : MonoBehaviour {
 		Vector3 v3_min = Vector3.zero;
 		Vector3 v3_max = Vector3.zero;
 		if (launcherDirection == Direction.Zp) {
-			v3_min.x = -1.0f;
-			v3_max.x = 1.0f;
-			v3_max.z = 1.0f;
+			v3_min.x = -6.0f;
+			v3_max.x = 6.0f;
+			v3_min.z = speed;
+			v3_min.z = speed;
 		} else if (launcherDirection == Direction.Zn) {
 			v3_min.x = -1.0f;
 			v3_min.z = -1.0f;
