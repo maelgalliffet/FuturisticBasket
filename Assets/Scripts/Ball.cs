@@ -7,14 +7,19 @@ public class Ball : MonoBehaviour {
 	private Collider glassCollider2;
 	private Collider batCollider1;
 	private Collider batCollider2;
+	private Renderer renderer;
 	private BallLauncher ballLauncher;
 	public Transform explosionPrefab;
 	public Transform bouncePrefab;
 	public Transform pointPrefab;
-	private bool m_Exploded;
+	public AudioClip explosionClip;
+	public AudioClip bounceClip;
+	public AudioClip pointClip;
+	private bool m_Exploded = false;
 	private NeonText neonText;
 	private int nbBounces = 0;
 	public int maxBounces;
+	private AudioSource audioSource;
 	// Use this for initialization
 	void Start () {
 		GameObject glass1 = GameObject.Find ("GlassBall1");
@@ -26,6 +31,9 @@ public class Ball : MonoBehaviour {
 		glassCollider2 = glass2.GetComponent<MeshCollider> ();
 		ballLauncher = GameObject.Find ("Ball Launcher").GetComponent<BallLauncher> ();
 		neonText =  GameObject.Find ("NeonScoreText").GetComponent<NeonText> ();
+		audioSource = GetComponent<AudioSource> ();
+		renderer = GetComponent<Renderer> ();
+
 	}
 	
 	// Update is called once per frame
@@ -45,7 +53,9 @@ public class Ball : MonoBehaviour {
 					ballLauncher.nbBalls--;
 					neonText.score++;
 					neonText.b_newPoint = true;
-					Destroy (this.gameObject);
+					PlayPointSound ();
+					renderer.enabled = false;
+					Destroy (this.gameObject,pointClip.length);
 
 				}
 				else if (col.collider == batCollider1 || col.collider == batCollider2) {
@@ -55,14 +65,33 @@ public class Ball : MonoBehaviour {
 					if (!m_Exploded) {
 						Instantiate (explosionPrefab, col.contacts [0].point,
 							Quaternion.LookRotation (col.contacts [0].normal));
-						m_Exploded = true;
 						ballLauncher.nbBalls--;
-						Destroy (this.gameObject);
+						m_Exploded = true;
+						PlayExplosionSound ();
+						renderer.enabled = false;
+						Destroy (this.gameObject,explosionClip.length);
 					}
 				} else {
 					Instantiate (bouncePrefab, col.contacts [0].point, Quaternion.LookRotation (col.contacts [0].normal));
+					PlayBounceSound ();
 				}
 			}
 		}
+	}
+
+	private void PlayExplosionSound()
+	{
+		audioSource.clip = explosionClip;
+		audioSource.Play ();
+	}
+	private void PlayBounceSound()
+	{
+		audioSource.clip = bounceClip;
+		audioSource.Play ();
+	}
+	private void PlayPointSound()
+	{
+		audioSource.clip = pointClip;
+		audioSource.Play ();
 	}
 }
